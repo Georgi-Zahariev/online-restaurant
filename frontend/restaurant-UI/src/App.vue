@@ -2,72 +2,7 @@
   <div class="app">
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
-      <ul class="nav-list">
-        <!--
-          If you have Router installed, replace `href="#"` with `to="/menu"` (etc.)
-          and import `<router-link>`. For now, these are plain buttons/links.
-        -->
-        <li>
-          <router-link
-            to="/menu"
-            class="nav-link"
-            :class="{ active: activeRoute === '/menu' }"
-            @click.native="activeRoute = '/menu'"
-          >
-            Menu
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/orders"
-            class="nav-link"
-            :class="{ active: activeRoute === '/orders' }"
-            @click.native="activeRoute = '/orders'"
-          >
-            Orders
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/cart"
-            class="nav-link"
-            :class="{ active: activeRoute === '/cart' }"
-            @click.native="activeRoute = '/cart'"
-          >
-            Shopping Cart
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/orders-dashboard"
-            class="nav-link"
-            :class="{ active: activeRoute === '/orders-dashboard' }"
-            @click.native="activeRoute = '/orders-dashboard'"
-          >
-            Orders Dashboard
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/delivery-dashboard"
-            class="nav-link"
-            :class="{ active: activeRoute === '/delivery-dashboard' }"
-            @click.native="activeRoute = '/delivery-dashboard'"
-          >
-            Delivery Dashboard
-          </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/profile"
-            class="nav-link"
-            :class="{ active: activeRoute === '/profile' }"
-            @click.native="activeRoute = '/profile'"
-          >
-            Profile
-          </router-link>
-        </li>
-      </ul>
+      <component :is="sidebarComponent" />
     </aside>
 
     <!-- Main Content Area -->
@@ -79,30 +14,25 @@
 </template>
 
 <script>
+import MainSidebar from './components/MainSidebar.vue'
+import MenuSidebar from './components/MenuSidebar.vue'
+
 export default {
   name: "App", // or MainLayout if you moved this into src/layouts/MainLayout.vue
-  data() {
-    return {
-      // We track the “active” route here so we can add a CSS class to highlight the currently selected link.
-      // If you prefer, you can also rely on <router-link v-slot="{ isActive }"> and skip this data altogether.
-      activeRoute: "/menu", 
-    };
-  },
-  mounted() {
-    // When the app first loads, sync `activeRoute` with whatever the current URL is.
-    this.activeRoute = this.$route.path;
-    // watch `$route` so that if the user navigates via browser back/forward, `activeRoute` stays in sync:
-    this.$watch(
-      () => this.$route.path,
-      (newPath) => {
-        this.activeRoute = newPath;
+  
+  computed: {
+    sidebarComponent() {
+      // Show MenuSidebar only on /menu and its subroutes
+      if (this.$route.path.startsWith('/menu')) {
+        return MenuSidebar
       }
-    );
+      return MainSidebar
+    }
   },
 };
 </script>
 
-<style scoped>
+<style>
 /* Make the app container fill 100% height of viewport, split into sidebar + content */
 .app {
   display: flex;
@@ -133,12 +63,15 @@ export default {
 .nav-link {
   display: block;
   width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #bbb;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  border: 2px solid #888;
+  box-sizing: border-box;
   border-radius: 4px;
   text-decoration: none;
-  color: #333;
-  font-weight: 500;
+  color: #222;
+  font-size: 1.25rem;
+  font-weight: 600;
   background-color: #fff;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
@@ -148,6 +81,8 @@ export default {
 .nav-link:focus {
   background-color: #eef2f3;
   border-color: #999;
+  box-shadow: 0 4px 16px rgba(76,175,80,0.08);
+
 }
 
 /* Active (selected) link styling */
@@ -167,9 +102,7 @@ export default {
 main {
   width: 100%;
 }
-</style>
 
-<style>
 html, body, #app {
   height: 100vh;
   width: 100vw;
