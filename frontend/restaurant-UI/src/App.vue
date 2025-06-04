@@ -42,7 +42,7 @@ export default {
 
 /* Sidebar styles */
 .sidebar {
-  width: 220px;              /* adjust as needed */
+  width: 230px;              /* adjust as needed */
   background-color: #f4f4f4; /* light gray background */
   padding: 24px 16px;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
@@ -70,7 +70,7 @@ export default {
   border-radius: 4px;
   text-decoration: none;
   color: #222;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   background-color: #fff;
   transition: background-color 0.2s ease, border-color 0.2s ease;
