@@ -1,0 +1,8 @@
+# ignore everything except files we need for the Go build
+*
+!go.mod
+!go.sum
+!backend/**
+!config/**
+
+
