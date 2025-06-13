@@ -26,8 +26,8 @@ func main() {
 
 	// Create router
 	r := mux.NewRouter()
-	r.HandleFunc("/api/object1", loggingMiddleware(object1Handler)).Methods("GET")
-	r.HandleFunc("/api/object2", loggingMiddleware(object2Handler)).Methods("GET")
+	r.HandleFunc("/api/object1", loggingMiddleware(handlers.object1Handler)).Methods("GET")
+	r.HandleFunc("/api/object2", loggingMiddleware(handlers.object2Handler)).Methods("GET")
 	r.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		log.Println("DEBUG: Entering healthz handler.")
 		w.WriteHeader(http.StatusOK)
