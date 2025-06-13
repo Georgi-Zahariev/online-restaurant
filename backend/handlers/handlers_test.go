@@ -59,13 +59,13 @@ func TestHealthHandler(t *testing.T) {
 
 	HealthHandler(rr, req)
 
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("HealthHandler returned wrong status code: got %v want %v", status, http.StatusOK)
+	if rr.Code != http.StatusOK {
+		t.Errorf("HealthHandler: expected status %d, got %d", http.StatusOK, rr.Code)
 	}
 
 	expected := "OK"
-	if strings.TrimSpace(rr.Body.String()) != expected {
-		t.Errorf("HealthHandler returned unexpected body: got %q want %q", rr.Body.String(), expected)
+	if rr.Body.String() != expected {
+		t.Errorf("HealthHandler: expected body %q, got %q", expected, rr.Body.String())
 	}
 }
 
@@ -76,12 +76,12 @@ func TestReadinessHandler(t *testing.T) {
 	ReadinessHandler(rr, req)
 
 	// expected status is 200 (ready).
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("ReadinessHandler returned wrong status code: got %v want %v", status, http.StatusOK)
+	if rr.Code != http.StatusOK {
+		t.Errorf("ReadinessHandler: expected status %d, got %d", http.StatusOK, rr.Code)
 	}
 
 	expected := "READY"
 	if strings.TrimSpace(rr.Body.String()) != expected {
-		t.Errorf("ReadinessHandler returned unexpected body: got %q want %q", rr.Body.String(), expected)
+		t.Errorf("ReadinessHandler: expected body %q, got %q", expected, rr.Body.String())
 	}
 }
