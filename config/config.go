@@ -5,4 +5,5 @@ type Config struct {
 	Env       string `env:"ENV,default=development"`
 	LogFormat string `env:"LOG_FORMAT,default=text"`
 	LogLevel  string `env:"LOG_SEVERITY,default=debug"`
+	AuthToken string `env:"AUTH_TOKEN,default=1234"`
 }

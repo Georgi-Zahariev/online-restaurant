@@ -10,3 +10,4 @@ services:
       - ENV=development
       - LOG_FORMAT=text
       - LOG_SEVERITY=debug
+      - AUTH_TOKEN=1234
