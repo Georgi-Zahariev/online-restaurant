@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 
 	"github.com/Georgi-Zahariev/online-restaurant/backend/handlers"
@@ -23,8 +23,7 @@ func SetupRouter() *mux.Router {
 func aroundHandlers(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		//r.Context()
-		log.Printf("DEBUG: Entering handler for %s %s", r.Method, r.URL.Path)
+		slog.Debug("Entering handler", slog.String("method", r.Method), slog.String("path", r.URL.Path))
 		next(w, r)
-
 	}
 }

@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/Georgi-Zahariev/online-restaurant/backend/routers"
 	"github.com/Georgi-Zahariev/online-restaurant/config"
@@ -14,20 +15,27 @@ import (
 func main() {
 	var cfg config.Config
 	ctx := context.Background()
-	log.Println("INFO: Starting application...")
+	slog.Info("Application starting...")
 
 	// Load configuration
 	if err := envconfig.Process(ctx, &cfg); err != nil {
-		log.Fatalf("ERROR: Failed to load configuration: %v", err)
+		slog.Error("Failed to load configuration", slog.String("error", err.Error()))
 	}
-	log.Println("INFO: Configuration loaded successfully.")
-	log.Printf("DEBUG: Configuration values: Port=%d, Env=%s, LogFormat=%s, LogSeverity=%s", cfg.Port, cfg.Env, cfg.LogFormat, cfg.LogLevel)
+	slog.Info("Configuration loaded successfully")
+	slog.Debug("Configuration values", slog.Int("Port", cfg.Port), slog.String("Env", cfg.Env), slog.String("LogFormat", cfg.LogFormat), slog.String("LogLevel", cfg.LogLevel))
 
 	// Setup the router from the routers package
 	r := routers.SetupRouter()
 
 	// Start server
 	addr := fmt.Sprintf(":%d", cfg.Port)
-	log.Printf("INFO: Starting web server on port %d in %s mode...", cfg.Port, cfg.Env)
-	log.Fatal(http.ListenAndServe(addr, r))
+	slog.Info("Starting web server", slog.String("address", addr), slog.String("environment", cfg.Env))
+
+	// log.Fatal(http.ListenAndServe(addr, r))
+	err := http.ListenAndServe(addr, r)
+	if err != nil {
+		slog.Error("Failed to start server", slog.String("address", addr), slog.String("error", err.Error()))
+		// same behavior as log.Fatal, but without exiting the program
+		os.Exit(1)
+	}
 }
