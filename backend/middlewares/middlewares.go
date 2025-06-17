@@ -13,18 +13,16 @@ func JSONContentTypeMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Middleware to validate "Authorization" header
-func AuthorizationMiddleware(expectedToken string) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			if authHeader != "Code "+expectedToken {
-				w.WriteHeader(http.StatusUnauthorized)
-				response := map[string]string{"error": "Unauthorized: Invalid or missing Authorization header"}
-				json.NewEncoder(w).Encode(response)
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
-	}
+// Middleware to validate "Authorization" header with a hardcoded token
+func AuthorizationMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authHeader := r.Header.Get("Authorization")
+		if authHeader != "Bearer abc" {
+			w.WriteHeader(http.StatusUnauthorized)
+			response := map[string]string{"error": "Unauthorized: Invalid or missing Authorization header"}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

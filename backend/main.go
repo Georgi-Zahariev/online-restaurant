@@ -24,7 +24,7 @@ func main() {
 		slog.Error("Failed to load configuration", slog.String("error", err.Error()))
 	}
 
-	slog.Debug("Loaded AUTH_TOKEN", slog.String("AuthToken", cfg.AuthToken)) // Log the token
+	slog.Debug("Loaded AUTH_TOKEN", slog.String("AuthToken", "Bearer abc")) // Log the token
 
 	slog.Info("Configuration loaded successfully")
 	slog.Debug("Configuration values", slog.Int("Port", cfg.Port), slog.String("Env", cfg.Env), slog.String("LogFormat", cfg.LogFormat), slog.String("LogLevel", cfg.LogLevel))
@@ -34,7 +34,7 @@ func main() {
 
 	// Apply middlewares
 	r.Use(middlewares.JSONContentTypeMiddleware)
-	r.Use(middlewares.AuthorizationMiddleware(cfg.AuthToken)) // Pass the expected token
+	r.Use(middlewares.AuthorizationMiddleware)
 
 	// Example endpoint
 	r.HandleFunc("/example", func(w http.ResponseWriter, r *http.Request) {
