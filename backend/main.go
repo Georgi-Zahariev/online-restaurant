@@ -2,55 +2,44 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/Georgi-Zahariev/online-restaurant/backend/middlewares"
-	"github.com/Georgi-Zahariev/online-restaurant/backend/routers"
+	"github.com/Georgi-Zahariev/online-restaurant/backend/server"
 	"github.com/Georgi-Zahariev/online-restaurant/config"
 	"github.com/sethvargo/go-envconfig"
 )
 
 func main() {
+	// Load configuration
 	var cfg config.Config
 	ctx := context.Background()
 	slog.Info("Application starting...")
 
-	// Load configuration
 	if err := envconfig.Process(ctx, &cfg); err != nil {
 		slog.Error("Failed to load configuration", slog.String("error", err.Error()))
+		os.Exit(1)
 	}
 
-	slog.Debug("Loaded AUTH_TOKEN", slog.String("AuthToken", "Bearer abc")) // Log the token
+	slog.Info("Configuration loaded successfully", slog.Int("Port", cfg.Port), slog.String("Env", cfg.Env))
 
-	slog.Info("Configuration loaded successfully")
-	slog.Debug("Configuration values", slog.Int("Port", cfg.Port), slog.String("Env", cfg.Env), slog.String("LogFormat", cfg.LogFormat), slog.String("LogLevel", cfg.LogLevel))
-
-	// Setup the router from the routers package
-	r := routers.SetupRouter()
+	// Initialize the server
+	s := &server.Server{}
+	s.Initialize()
 
 	// Apply middlewares
-	r.Use(middlewares.JSONContentTypeMiddleware)
-	r.Use(middlewares.AuthorizationMiddleware)
+	s.Router.Use(middlewares.JSONContentTypeMiddleware)
+	//s.Router.Use(middlewares.AuthorizationMiddleware)
 
-	// Example endpoint
-	r.HandleFunc("/example", func(w http.ResponseWriter, r *http.Request) {
-		response := map[string]string{"message": "Success"}
-		json.NewEncoder(w).Encode(response)
-	}).Methods("GET")
-
-	// Start server
+	// Start the server
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	slog.Info("Starting web server", slog.String("address", addr), slog.String("environment", cfg.Env))
 
-	// log.Fatal(http.ListenAndServe(addr, r))
-	err := http.ListenAndServe(addr, r)
-	if err != nil {
-		slog.Error("Failed to start server", slog.String("address", addr), slog.String("error", err.Error()))
-		// same behavior as log.Fatal, but without exiting the program
+	if err := http.ListenAndServe(addr, s.Router); err != nil {
+		slog.Error("Failed to start server", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 }
