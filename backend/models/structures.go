@@ -2,15 +2,22 @@ package models
 
 import "time"
 
+// Base struct for common fields
+type Base struct {
+	ID        string    `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 // User struct
 type User struct {
-	ID          string `json:"id"`
+	Base        `json:"base"`
 	PhoneNumber string `json:"phone_number"`
 }
 
 // Address struct
 type Address struct {
-	ID      string `json:"id"`
+	Base    `json:"base"`
 	City    string `json:"city"`
 	Number  int    `json:"number"`
 	Code    string `json:"code"`
@@ -20,15 +27,15 @@ type Address struct {
 
 // Category struct
 type Category struct {
-	ID   string `json:"id"`
+	Base `json:"base"`
 	Name string `json:"name"`
 }
 
 // Dish struct
 type Dish struct {
-	ID          string  `json:"id"`
+	Base        `json:"base"`
 	Name        string  `json:"name"`
-	Photo       string  `json:"photo"` // Assuming photo is a URL or base64 string
+	Photo       string  `json:"photo"` // Not sure if it will work
 	Price       float64 `json:"price"`
 	Description string  `json:"description"`
 	CategoryID  string  `json:"category_id"`
@@ -36,7 +43,7 @@ type Dish struct {
 
 // Order struct
 type Order struct {
-	ID         string    `json:"id"`
+	Base       `json:"base"`
 	Price      float64   `json:"price"`
 	Status     string    `json:"status"`
 	DayAndTime time.Time `json:"day_and_time"`
@@ -45,14 +52,15 @@ type Order struct {
 
 // OrderDish struct
 type OrderItem struct {
-	ID              string  `json:"id"`
+	Base            `json:"base"`
 	Count           int     `json:"count"`
 	Price           float64 `json:"price"`
 	Comments        string  `json:"comments"`
-	CompletedByChef string  `json:"completed_by_chef"` // Foreign key to User
+	CompletedByChef string  `json:"completed_by_chef"`
 	OrderID         string  `json:"order_id"`
 }
 
+/*
 // IDPUser struct
 type IDPUser struct {
 	ID     string `json:"id"`
@@ -78,3 +86,4 @@ type RolePrivilege struct {
 	RoleID      string `json:"role_id"`
 	PrivilegeID string `json:"privilege_id"`
 }
+*/
