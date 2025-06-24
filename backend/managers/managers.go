@@ -18,16 +18,17 @@ type Manager struct {
 func NewManager() *Manager {
 	return &Manager{
 		Users: []models.User{
-			{ID: "1", PhoneNumber: "123456789"},
-			{ID: "2", PhoneNumber: "987654321"},
+
+			{Base: models.Base{ID: "1", CreatedAt: time.Now(), UpdatedAt: time.Now()}, PhoneNumber: "123456789"},
+			{Base: models.Base{ID: "2", CreatedAt: time.Now(), UpdatedAt: time.Now()}, PhoneNumber: "987654321"},
 		},
 		Dishes: []models.Dish{
-			{ID: "1", Name: "Pizza", Photo: "pizza.jpg", Price: 12.99, Description: "Delicious pizza", CategoryID: "1"},
-			{ID: "2", Name: "Burger", Photo: "burger.jpg", Price: 8.99, Description: "Juicy burger", CategoryID: "2"},
+			{Base: models.Base{ID: "1", CreatedAt: time.Now(), UpdatedAt: time.Now()}, Name: "Pizza", Photo: "pizza.jpg", Price: 12.99, Description: "Delicious pizza", CategoryID: "1"},
+			{Base: models.Base{ID: "2", CreatedAt: time.Now(), UpdatedAt: time.Now()}, Name: "Burger", Photo: "burger.jpg", Price: 8.99, Description: "Juicy burger", CategoryID: "2"},
 		},
 		Orders: []models.Order{
-			{ID: "1", Price: 21.98, Status: "Pending", DayAndTime: time.Now(), UserID: "1"},
-			{ID: "2", Price: 8.99, Status: "Completed", DayAndTime: time.Now(), UserID: "2"},
+			{Base: models.Base{ID: "1", CreatedAt: time.Now(), UpdatedAt: time.Now()}, Price: 21.98, Status: "Pending", DayAndTime: time.Now(), UserID: "1"},
+			{Base: models.Base{ID: "2", CreatedAt: time.Now(), UpdatedAt: time.Now()}, Price: 8.99, Status: "Completed", DayAndTime: time.Now(), UserID: "2"},
 		},
 	}
 }
