@@ -31,6 +31,7 @@ func main() {
 	s.Initialize()
 
 	// Apply middlewares
+	s.Router.Use(middlewares.LoggerMiddleware)
 	s.Router.Use(middlewares.JSONContentTypeMiddleware)
 	//s.Router.Use(middlewares.AuthorizationMiddleware)
 
