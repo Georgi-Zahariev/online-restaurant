@@ -1,4 +1,4 @@
-FROM migrate/migrate:v4.16.2
+FROM migrate/migrate:v4.18.3
 
 WORKDIR /app
 COPY db/migrations /migrations
