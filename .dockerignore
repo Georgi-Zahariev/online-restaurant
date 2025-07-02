@@ -1,8 +1,16 @@
-# ignore everything except files we need for the Go build
+# ignore everything by default
 *
+
+# Go backend needs
 !go.mod
 !go.sum
 !backend/**
 !config/**
 
+# Include Dockerfiles and entrypoint
+!Dockerfile
+!Dockerfile-db
+!entrypoint.sh
 
+# Include your SQL migrations
+!db/migrations/**

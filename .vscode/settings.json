@@ -1,0 +1,17 @@
+// .vscode/settings.json
+{
+  "sqltools.connections": [
+    {
+      "name": "restaurant",
+      "driver": "PostgreSQL",
+      // pull host/port/db/user/pass from .env
+      "server":   "${env:POSTGRES_HOST}",
+      "port":     "${env:POSTGRES_PORT}",
+      "database": "${env:POSTGRES_DB}",
+      "username": "${env:POSTGRES_USER}",
+      "password": "${env:POSTGRES_PASSWORD}",
+      
+      "previewLimit": 50
+    }
+  ]
+}

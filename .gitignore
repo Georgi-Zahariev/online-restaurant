@@ -1,0 +1,15 @@
+# Go and general ignores
+node_modules/
+dist/
+build/
+
+# local environment variables
+.env
+
+*.log
+
+# macOS
+.DS_Store
+
+# Docker
+db_data/

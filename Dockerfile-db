@@ -1,6 +1,8 @@
-FROM migrate/migrate:v4.16.2
+# Dockerfile-db
+FROM migrate/migrate:v4.18.3
 
-WORKDIR /app
-COPY db/migrations /migrations
+WORKDIR /db/migrations
+COPY ./db/migrations /db/migrations
 
-CMD ["-path", "/migrations", "-database", "postgres://postgres:postgres@db:5432/postgres?sslmode=disable", "up"]
+# Run migrate with the command from $MIGRATION_COMMAND (defaults via .env)
+ENTRYPOINT ["sh", "-c", "exec migrate -path /db/migrations -database \"$DATABASE_URL\" \"$MIGRATION_COMMAND\""]
