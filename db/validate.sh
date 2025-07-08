@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
+# Load environment variables from .env
+set -a
+[ -f "$PWD/../.env" ] && source "$PWD/../.env"
+set +a
+
 ROOT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 POSTGRES_CONTAINER="restaurant-db-validate"
-POSTGRES_HOST="localhost"
-POSTGRES_PORT="55432" # Use a non-standard port to avoid conflicts
-POSTGRES_DB="restaurant"
-POSTGRES_USER="postgres"
-POSTGRES_PASSWORD="postgres"
-POSTGRES_SSL="disable"
 POSTGRES_VERSION="17-alpine"
 
-CONNECTION_STRING="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=${POSTGRES_SSL}"
+# Use a non-standard port for validation to avoid conflicts, or fallback to .env port
+VALIDATE_PORT=55432
+POSTGRES_PORT="${VALIDATE_PORT}"
+
+CONNECTION_STRING="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=${POSTGRES_SSLMODE}"
 
 function clean() {
     echo "Removing DB container..."
@@ -47,8 +50,8 @@ fi
 
 echo "Migration version after UP: $(migrate -path db/migrations -database "${CONNECTION_STRING}" version 2>&1)"
 
-echo "Running migrations DOWN by 1..."
-migrate -path db/migrations -database "${CONNECTION_STRING}" down 1
+echo "Running migrations DOWN to 0..."
+migrate -path db/migrations -database "${CONNECTION_STRING}" down 0
 
 echo "Migration version after DOWN: $(migrate -path db/migrations -database "${CONNECTION_STRING}" version 2>&1)"
 
