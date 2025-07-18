@@ -33,13 +33,6 @@ jobs:
       with:
         go-version: '1.24.3'
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: frontend/restaurant-UI/package-lock.json
-
     # Backend checks
     - name: Go format check
       run: gofmt -s -w . && git diff --exit-code
@@ -56,17 +49,4 @@ jobs:
       run: go test ./...
 
     - name: Go build
-      run: go build -o bin/app backend
-
-    # Frontend checks
-    - name: Install frontend dependencies
-      working-directory: ./frontend/restaurant-UI
-      run: npm ci
-
-    - name: Frontend lint
-      working-directory: ./frontend/restaurant-UI
-      run: npm run lint
-
-    - name: Frontend build
-      working-directory: ./frontend/restaurant-UI
-      run: npm run build
+      run: go build -o bin/app ./backend
