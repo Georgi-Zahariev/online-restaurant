@@ -14,10 +14,51 @@ type Base struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"column:deletedat;index"`
 }
 
+// User roles
+type UserRole string
+
+const (
+	RoleCustomer UserRole = "customer"
+	RoleKitchen  UserRole = "kitchen"
+	RoleDelivery UserRole = "delivery"
+	RoleOwner    UserRole = "owner"
+)
+
+// Simple role access map - defines what endpoints each role can access
+var RoleAccess = map[UserRole][]string{
+	RoleCustomer: {
+		"GET /api/dishes",
+		"GET /api/categories",
+		"GET /api/profile",
+		"PUT /api/profile",
+		"GET /api/orders",
+		"POST /api/orders",
+		"GET /api/cart",
+		"POST /api/cart",
+	},
+	RoleKitchen: {
+		"GET /api/profile",
+		"PUT /api/profile",
+		"GET /api/order-dashboard",
+		"PUT /api/order-items/complete",
+	},
+	RoleDelivery: {
+		"GET /api/profile",
+		"PUT /api/profile",
+		"GET /api/delivery-dashboard",
+		"PUT /api/orders/deliver",
+	},
+	RoleOwner: {
+		// Owner can access everything
+		"*",
+	},
+}
+
 // User struct
 type User struct {
 	Base
-	PhoneNumber string `json:"phone_number" gorm:"column:phonenumber"`
+	PhoneNumber string   `json:"phone_number" gorm:"column:phonenumber"`
+	Role        UserRole `json:"role" gorm:"column:role;type:varchar(20);default:'customer'"`
 }
 
 // Address struct
