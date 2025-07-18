@@ -1,15 +1,43 @@
-# Go and general ignores
+# Go build artifacts
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+coverage.out
+coverage.txt
+
+# Frontend build artifacts
 node_modules/
 dist/
 build/
 
-# local environment variables
+# Local environment variables
 .env
+.env.local
+.env.development
+.env.test
+.env.production
 
+# Logs
 *.log
+logs/
 
 # macOS
 .DS_Store
 
 # Docker
 db_data/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/

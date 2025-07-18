@@ -47,3 +47,7 @@ done
 
 echo "Starting backend..."
 echo
+
+echo "Running migrations..."
+go run backend/main.go migrate
+echo

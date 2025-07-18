@@ -1,63 +1,68 @@
 package models
 
-import "time"
+import (
+	"time"
 
-// Base struct for common fields
+	"gorm.io/gorm"
+)
+
+// Base struct for common fields matching your database schema
 type Base struct {
-	ID        string    `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        string         `json:"id" gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
+	CreatedAt time.Time      `json:"created_at" gorm:"column:createdat"`
+	UpdatedAt time.Time      `json:"updated_at" gorm:"column:updatedat"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"column:deletedat;index"`
 }
 
 // User struct
 type User struct {
-	Base        `json:"base"`
-	PhoneNumber string `json:"phone_number"`
+	Base
+	PhoneNumber string `json:"phone_number" gorm:"column:phonenumber"`
 }
 
 // Address struct
 type Address struct {
-	Base    `json:"base"`
-	City    string `json:"city"`
-	Number  int    `json:"number"`
-	Code    string `json:"code"`
-	Country string `json:"country"`
-	UserID  string `json:"user_id"`
+	Base
+	City    string `json:"city" gorm:"column:city"`
+	Number  int    `json:"number" gorm:"column:number"`
+	Code    string `json:"code" gorm:"column:code"`
+	Country string `json:"country" gorm:"column:country"`
+	UserID  string `json:"user_id" gorm:"column:userid;type:uuid"`
 }
 
 // Category struct
 type Category struct {
-	Base `json:"base"`
-	Name string `json:"name"`
+	Base
+	Name string `json:"name" gorm:"column:name"`
 }
 
 // Dish struct
 type Dish struct {
-	Base        `json:"base"`
-	Name        string  `json:"name"`
-	Photo       string  `json:"photo"` // Not sure if it will work
-	Price       float64 `json:"price"`
-	Description string  `json:"description"`
-	CategoryID  string  `json:"category_id"`
+	Base
+	Name        string  `json:"name" gorm:"column:name"`
+	Photo       string  `json:"photo" gorm:"column:photo"`
+	Price       float64 `json:"price" gorm:"column:price;type:numeric(10,2)"`
+	Description string  `json:"description" gorm:"column:description"`
+	CategoryID  string  `json:"category_id" gorm:"column:categoryid;type:uuid"`
 }
 
 // Order struct
 type Order struct {
-	Base       `json:"base"`
-	Price      float64   `json:"price"`
-	Status     string    `json:"status"`
-	DayAndTime time.Time `json:"day_and_time"`
-	UserID     string    `json:"user_id"`
+	Base
+	Price      float64   `json:"price" gorm:"column:price;type:numeric(10,2)"`
+	Status     string    `json:"status" gorm:"column:status"`
+	DayAndTime time.Time `json:"day_and_time" gorm:"column:dayandtime"`
+	UserID     string    `json:"user_id" gorm:"column:userid;type:uuid"`
 }
 
-// OrderDish struct
+// OrderItem struct
 type OrderItem struct {
-	Base            `json:"base"`
-	Count           int     `json:"count"`
-	Price           float64 `json:"price"`
-	Comments        string  `json:"comments"`
-	CompletedByChef string  `json:"completed_by_chef"`
-	OrderID         string  `json:"order_id"`
+	Base
+	Count           int     `json:"count" gorm:"column:count"`
+	Price           float64 `json:"price" gorm:"column:price;type:numeric(10,2)"`
+	Comments        string  `json:"comments" gorm:"column:comments"`
+	CompletedByChef string  `json:"completed_by_chef" gorm:"column:completedbychef;type:uuid"`
+	OrderID         string  `json:"order_id" gorm:"column:orderid;type:uuid"`
 }
 
 /*

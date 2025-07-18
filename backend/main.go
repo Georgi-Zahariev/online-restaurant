@@ -28,7 +28,7 @@ func main() {
 
 	// Initialize the server
 	s := &server.Server{}
-	s.Initialize()
+	s.Initialize(cfg)
 
 	// Apply middlewares
 	s.Router.Use(middlewares.LoggerMiddleware)

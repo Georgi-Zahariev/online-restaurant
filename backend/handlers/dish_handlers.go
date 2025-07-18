@@ -11,47 +11,47 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type UserHandler struct {
+type DishHandler struct {
 	Manager *managers.Manager
 }
 
-func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+func (h *DishHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	w.Header().Set("Content-Type", "application/json")
-	users, err := h.Manager.GetAllUsers()
+	dishes, err := h.Manager.GetAllDishes()
 	if err != nil {
 		if logger != nil {
-			logger.Error("GetAllUsers failed", "error", err)
+			logger.Error("GetAllDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(dishes)
 }
 
-func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
+func (h *DishHandler) Get(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	w.Header().Set("Content-Type", "application/json")
 	idStr := mux.Vars(r)["id"]
 	if idStr == "" {
 		if logger != nil {
-			logger.Error("User ID is required")
+			logger.Error("Dish ID is required")
 		}
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		http.Error(w, "Dish ID is required", http.StatusBadRequest)
 		return
 	}
-	user, err := h.Manager.GetUser(idStr)
+	dish, err := h.Manager.GetDish(idStr)
 	if err != nil {
 		if logger != nil {
-			logger.Error("GetUser failed", "error", err)
+			logger.Error("GetDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(dish)
 }
 
-func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *DishHandler) Create(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	w.Header().Set("Content-Type", "application/json")
 	body, err := io.ReadAll(r.Body)
@@ -62,39 +62,38 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
-	var user models.User
-	if err := json.Unmarshal(body, &user); err != nil {
+	var dish models.Dish
+	if err := json.Unmarshal(body, &dish); err != nil {
 		if logger != nil {
 			logger.Error("Invalid JSON input", "error", err)
 		}
 		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.CreateUser(&user); err != nil {
+	if err := h.Manager.CreateDish(&dish); err != nil {
 		if logger != nil {
-			logger.Error("CreateUser failed", "error", err)
+			logger.Error("CreateDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// Fetch the created user to return DB-generated fields
-	createdUser, _ := h.Manager.GetUser(user.ID)
+	createdDish, _ := h.Manager.GetDish(dish.ID)
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdUser)
+	json.NewEncoder(w).Encode(createdDish)
 }
 
-func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
+func (h *DishHandler) Update(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	w.Header().Set("Content-Type", "application/json")
 	idStr := mux.Vars(r)["id"]
 	if idStr == "" {
 		if logger != nil {
-			logger.Error("User ID is required")
+			logger.Error("Dish ID is required")
 		}
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		http.Error(w, "Dish ID is required", http.StatusBadRequest)
 		return
 	}
-	var user models.User
+	var dish models.Dish
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		if logger != nil {
@@ -103,37 +102,37 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
-	if err := json.Unmarshal(body, &user); err != nil {
+	if err := json.Unmarshal(body, &dish); err != nil {
 		if logger != nil {
 			logger.Error("Invalid JSON input", "error", err)
 		}
 		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.UpdateUser(idStr, &user); err != nil {
+	if err := h.Manager.UpdateDish(idStr, &dish); err != nil {
 		if logger != nil {
-			logger.Error("UpdateUser failed", "error", err)
+			logger.Error("UpdateDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	updatedUser, _ := h.Manager.GetUser(idStr)
-	json.NewEncoder(w).Encode(updatedUser)
+	updatedDish, _ := h.Manager.GetDish(idStr)
+	json.NewEncoder(w).Encode(updatedDish)
 }
 
-func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (h *DishHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	idStr := mux.Vars(r)["id"]
 	if idStr == "" {
 		if logger != nil {
-			logger.Error("User ID is required")
+			logger.Error("Dish ID is required")
 		}
-		http.Error(w, "User ID is required", http.StatusBadRequest)
+		http.Error(w, "Dish ID is required", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.DeleteUser(idStr); err != nil {
+	if err := h.Manager.DeleteDish(idStr); err != nil {
 		if logger != nil {
-			logger.Error("DeleteUser failed", "error", err)
+			logger.Error("DeleteDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
