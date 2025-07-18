@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"github.com/Georgi-Zahariev/online-restaurant/backend/handlers"
-	"github.com/Georgi-Zahariev/online-restaurant/backend/middlewares"
-	"github.com/Georgi-Zahariev/online-restaurant/backend/models"
 	"github.com/gorilla/mux"
 )
 
@@ -41,34 +39,10 @@ func InitializeRoutes(router *mux.Router, handlers map[string]map[string]http.Ha
 func SetupRouter() *mux.Router {
 	r := mux.NewRouter()
 
-	// Public routes (no role checking required)
 	r.HandleFunc("/healthz", aroundHandlers(handlers.HealthHandler)).Methods("GET")
 	r.HandleFunc("/readyz", aroundHandlers(handlers.ReadinessHandler)).Methods("GET")
-
-	// API routes with role-based access control
-	api := r.PathPrefix("/api").Subrouter()
-
-	// Customer routes (Home, Menu, Shopping cart, Profile)
-	api.Handle("/home", middlewares.RequireRole(models.RoleCustomer)(http.HandlerFunc(handlers.HomePageHandler))).Methods("GET")
-	api.Handle("/menu", middlewares.RequireRole(models.RoleCustomer)(http.HandlerFunc(handlers.MenuHandler))).Methods("GET")
-	api.Handle("/dishes", middlewares.RequireRole(models.RoleCustomer)(http.HandlerFunc(handlers.Object1Handler))).Methods("GET")
-	api.Handle("/cart", middlewares.RequireRole(models.RoleCustomer)(http.HandlerFunc(handlers.Object1Handler))).Methods("GET", "POST")
-	api.Handle("/orders", middlewares.RequireRole(models.RoleCustomer)(http.HandlerFunc(handlers.Object2Handler))).Methods("GET", "POST")
-
-	// Kitchen routes (Profile, Order dashboard)
-	api.Handle("/order-dashboard", middlewares.RequireRole(models.RoleKitchen)(http.HandlerFunc(handlers.OrderDashboardHandler))).Methods("GET")
-	api.Handle("/order-items/complete", middlewares.RequireRole(models.RoleKitchen)(http.HandlerFunc(handlers.Object2Handler))).Methods("PUT")
-
-	// Delivery routes (Profile, Delivery dashboard)
-	api.Handle("/delivery-dashboard", middlewares.RequireRole(models.RoleDelivery)(http.HandlerFunc(handlers.DeliveryDashboardHandler))).Methods("GET")
-	api.Handle("/orders/deliver", middlewares.RequireRole(models.RoleDelivery)(http.HandlerFunc(handlers.Object1Handler))).Methods("PUT")
-
-	// Profile routes (accessible by all roles)
-	api.Handle("/profile", middlewares.RequireRole(models.RoleCustomer, models.RoleKitchen, models.RoleDelivery, models.RoleOwner)(http.HandlerFunc(handlers.ProfileHandler))).Methods("GET", "PUT")
-
-	// Owner routes (can access everything - these are just examples)
-	api.Handle("/admin", middlewares.RequireRole(models.RoleOwner)(http.HandlerFunc(handlers.AdminHandler))).Methods("GET")
-	api.Handle("/analytics", middlewares.RequireRole(models.RoleOwner)(http.HandlerFunc(handlers.Object2Handler))).Methods("GET")
+	r.HandleFunc("/api/object1", aroundHandlers(handlers.Object1Handler)).Methods("GET")
+	r.HandleFunc("/api/object2", aroundHandlers(handlers.Object2Handler)).Methods("GET")
 
 	return r
 }
