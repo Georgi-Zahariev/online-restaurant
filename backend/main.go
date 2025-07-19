@@ -33,6 +33,7 @@ func main() {
 	// Apply middlewares
 	s.Router.Use(middlewares.LoggerMiddleware)
 	s.Router.Use(middlewares.JSONContentTypeMiddleware)
+	s.Router.Use(middlewares.UserContextMiddleware)
 	//s.Router.Use(middlewares.AuthorizationMiddleware)
 
 	// Start the server

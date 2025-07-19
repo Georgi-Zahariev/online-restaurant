@@ -18,7 +18,7 @@ type UserHandler struct {
 func (h *UserHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	w.Header().Set("Content-Type", "application/json")
-	users, err := h.Manager.GetAllUsers()
+	users, err := h.Manager.GetAllUsers(r.Context())
 	if err != nil {
 		if logger != nil {
 			logger.Error("GetAllUsers failed", "error", err)
@@ -40,7 +40,7 @@ func (h *UserHandler) Get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
-	user, err := h.Manager.GetUser(idStr)
+	user, err := h.Manager.GetUser(r.Context(), idStr)
 	if err != nil {
 		if logger != nil {
 			logger.Error("GetUser failed", "error", err)
@@ -70,7 +70,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.CreateUser(&user); err != nil {
+	if err := h.Manager.CreateUser(r.Context(), &user); err != nil {
 		if logger != nil {
 			logger.Error("CreateUser failed", "error", err)
 		}
@@ -78,7 +78,7 @@ func (h *UserHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Fetch the created user to return DB-generated fields
-	createdUser, _ := h.Manager.GetUser(user.ID)
+	createdUser, _ := h.Manager.GetUser(r.Context(), user.ID)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdUser)
 }
@@ -110,14 +110,14 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.UpdateUser(idStr, &user); err != nil {
+	if err := h.Manager.UpdateUser(r.Context(), idStr, &user); err != nil {
 		if logger != nil {
 			logger.Error("UpdateUser failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	updatedUser, _ := h.Manager.GetUser(idStr)
+	updatedUser, _ := h.Manager.GetUser(r.Context(), idStr)
 	json.NewEncoder(w).Encode(updatedUser)
 }
 
@@ -131,7 +131,7 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "User ID is required", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.DeleteUser(idStr); err != nil {
+	if err := h.Manager.DeleteUser(r.Context(), idStr); err != nil {
 		if logger != nil {
 			logger.Error("DeleteUser failed", "error", err)
 		}
@@ -139,4 +139,20 @@ func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// GetCurrentUser returns the current user from context
+func (h *UserHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	logger := middlewares.GetLogger(r.Context())
+	w.Header().Set("Content-Type", "application/json")
+
+	user, err := h.Manager.GetCurrentUser(r.Context())
+	if err != nil {
+		if logger != nil {
+			logger.Error("GetCurrentUser failed", "error", err)
+		}
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	json.NewEncoder(w).Encode(user)
 }

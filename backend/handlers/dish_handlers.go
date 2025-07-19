@@ -18,7 +18,7 @@ type DishHandler struct {
 func (h *DishHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	logger := middlewares.GetLogger(r.Context())
 	w.Header().Set("Content-Type", "application/json")
-	dishes, err := h.Manager.GetAllDishes()
+	dishes, err := h.Manager.GetAllDishes(r.Context())
 	if err != nil {
 		if logger != nil {
 			logger.Error("GetAllDish failed", "error", err)
@@ -40,7 +40,7 @@ func (h *DishHandler) Get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Dish ID is required", http.StatusBadRequest)
 		return
 	}
-	dish, err := h.Manager.GetDish(idStr)
+	dish, err := h.Manager.GetDish(r.Context(), idStr)
 	if err != nil {
 		if logger != nil {
 			logger.Error("GetDish failed", "error", err)
@@ -70,14 +70,14 @@ func (h *DishHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.CreateDish(&dish); err != nil {
+	if err := h.Manager.CreateDish(r.Context(), &dish); err != nil {
 		if logger != nil {
 			logger.Error("CreateDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	createdDish, _ := h.Manager.GetDish(dish.ID)
+	createdDish, _ := h.Manager.GetDish(r.Context(), dish.ID)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdDish)
 }
@@ -109,14 +109,14 @@ func (h *DishHandler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid JSON input", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.UpdateDish(idStr, &dish); err != nil {
+	if err := h.Manager.UpdateDish(r.Context(), idStr, &dish); err != nil {
 		if logger != nil {
 			logger.Error("UpdateDish failed", "error", err)
 		}
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	updatedDish, _ := h.Manager.GetDish(idStr)
+	updatedDish, _ := h.Manager.GetDish(r.Context(), idStr)
 	json.NewEncoder(w).Encode(updatedDish)
 }
 
@@ -130,7 +130,7 @@ func (h *DishHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Dish ID is required", http.StatusBadRequest)
 		return
 	}
-	if err := h.Manager.DeleteDish(idStr); err != nil {
+	if err := h.Manager.DeleteDish(r.Context(), idStr); err != nil {
 		if logger != nil {
 			logger.Error("DeleteDish failed", "error", err)
 		}

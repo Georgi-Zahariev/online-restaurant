@@ -8,7 +8,7 @@ import (
 
 	"github.com/Georgi-Zahariev/online-restaurant/backend/handlers"
 	"github.com/Georgi-Zahariev/online-restaurant/backend/managers"
-	"github.com/Georgi-Zahariev/online-restaurant/backend/models"
+	"github.com/Georgi-Zahariev/online-restaurant/backend/middlewares"
 	"github.com/Georgi-Zahariev/online-restaurant/config"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
@@ -34,15 +34,19 @@ func (s *Server) Initialize(cfg config.Config) {
 	}
 	s.DB = db
 
-	// Run migrations
-	if err := db.AutoMigrate(&models.User{}, &models.Dish{}, &models.Order{}); err != nil {
-		log.Fatalf("migration failed: %v", err)
-	}
+	// Note: We're using manual migrations instead of AutoMigrate
+	// Run migrations using docker-compose migrations service or manually
+	// if err := db.AutoMigrate(&models.User{}, &models.Dish{}, &models.Order{}); err != nil {
+	//     log.Fatalf("migration failed: %v", err)
+	// }
 
 	s.Manager = managers.NewManager(db)
 
 	//
 	s.Router = mux.NewRouter()
+
+	// Apply user context middleware to all routes
+	s.Router.Use(middlewares.UserContextMiddleware)
 
 	// Initialize entity-specific handlers
 	userHandler := &handlers.UserHandler{Manager: s.Manager}
@@ -51,6 +55,7 @@ func (s *Server) Initialize(cfg config.Config) {
 
 	// Register user routes
 	s.Router.HandleFunc("/api/users", userHandler.GetAll).Methods("GET")
+	s.Router.HandleFunc("/api/users/me", userHandler.GetCurrentUser).Methods("GET")
 	s.Router.HandleFunc("/api/users/{id}", userHandler.Get).Methods("GET")
 	s.Router.HandleFunc("/api/users", userHandler.Create).Methods("POST")
 	s.Router.HandleFunc("/api/users/{id}", userHandler.Update).Methods("PUT")
