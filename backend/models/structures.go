@@ -8,7 +8,7 @@ import (
 
 // Base struct for common fields matching your database schema
 type Base struct {
-	ID        string         `json:"id" gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
+	ID        string         `json:"id" gorm:"column:id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	CreatedAt time.Time      `json:"created_at" gorm:"column:createdat"`
 	UpdatedAt time.Time      `json:"updated_at" gorm:"column:updatedat"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty" gorm:"column:deletedat;index"`
@@ -63,6 +63,7 @@ type OrderItem struct {
 	Comments        string  `json:"comments" gorm:"column:comments"`
 	CompletedByChef string  `json:"completed_by_chef" gorm:"column:completedbychef;type:uuid"`
 	OrderID         string  `json:"order_id" gorm:"column:orderid;type:uuid"`
+	DishID          string  `json:"dish_id" gorm:"column:dishid;type:uuid"`
 }
 
 /*
