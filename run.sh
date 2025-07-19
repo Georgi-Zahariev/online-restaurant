@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# export all varaibles in .ev file to here
+# Load environment variables from .env file
 set -a
 [ -f .env ] && source .env
 set +a
@@ -16,6 +16,8 @@ if [ -z "$keepDBs" ]; then
 else
   echo "keepDBs is set. Will reuse existing DB containers if present."
 fi
+
+echo "Ensuring database is running..."
 
 # Check if the DB container is running, start it if not
 if ! docker ps --format '{{.Names}}' | grep -q "^${DB_CONTAINER_NAME}$"; then
@@ -45,9 +47,20 @@ for i in {1..10}; do
   sleep 1
 done
 
+# Run migrations using migrate tool
+echo "Running migrations..."
+CONNECTION_STRING="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=${POSTGRES_SSLMODE}"
+
+if command -v migrate &> /dev/null; then
+    migrate -path db/migrations -database "${CONNECTION_STRING}" up
+    echo "Migrations completed!"
+else
+    echo "migrate tool not found. Please install it or run migrations manually."
+fi
+
+echo
 echo "Starting backend..."
 echo
 
-echo "Running migrations..."
-go run backend/main.go migrate
-echo
+# Start the Go application
+go run backend/main.go
